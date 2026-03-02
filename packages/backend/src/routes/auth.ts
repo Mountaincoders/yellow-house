@@ -1,5 +1,5 @@
 import { Router, Response, Router as ExpressRouter } from 'express';
-import { signup, login, blacklistToken } from '../services/auth.js';
+import { signup, login, blacklistToken, requestPasswordReset, confirmPasswordReset } from '../services/auth.js';
 import { authMiddleware, type AuthRequest } from '../middleware/auth.js';
 
 const router: ReturnType<typeof Router> = Router();
@@ -50,6 +50,49 @@ router.post('/logout', authMiddleware, async (req: AuthRequest, res: Response) =
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: message });
+  }
+});
+
+router.post('/request-reset', async (req: AuthRequest, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({ error: 'Missing email' });
+      return;
+    }
+
+    const resetToken = await requestPasswordReset(email);
+    // In production, send email with reset link
+    // For MVP, we return the token (for testing purposes)
+    res.status(200).json({ 
+      message: 'If an account exists for this email, a reset link will be sent.',
+      resetToken: resetToken // Remove this in production!
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ error: message });
+  }
+});
+
+router.post('/confirm-reset', async (req: AuthRequest, res: Response) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      res.status(400).json({ error: 'Missing token or password' });
+      return;
+    }
+
+    await confirmPasswordReset(token, newPassword);
+    res.status(200).json({ 
+      success: true, 
+      message: 'Password reset successfully. Please login with your new password.' 
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    const status = message.includes('Invalid or expired') ? 400 : 500;
+    res.status(status).json({ error: message });
   }
 });
 

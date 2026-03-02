@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash VARCHAR(255) NOT NULL,
   timezone VARCHAR(100) NOT NULL DEFAULT 'UTC',
   verified BOOLEAN DEFAULT FALSE,
+  reset_token VARCHAR(255),
+  reset_token_expires_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

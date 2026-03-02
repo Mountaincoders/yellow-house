@@ -54,6 +54,62 @@ export async function blacklistToken(jti: string): Promise<void> {
   }
 }
 
+export async function requestPasswordReset(email: string): Promise<string> {
+  const user = await findUserByEmail(email);
+  if (!user) {
+    // Don't reveal if user exists or not (security best practice)
+    return 'If an account exists for this email, a reset link will be sent.';
+  }
+
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  const resetExpiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+  try {
+    await query(
+      'UPDATE users SET reset_token = $1, reset_token_expires_at = $2 WHERE id = $3',
+      [resetToken, resetExpiresAt, user.id]
+    );
+    return resetToken;
+  } catch (err) {
+    console.error('Error generating reset token:', err);
+    throw err;
+  }
+}
+
+export async function confirmPasswordReset(resetToken: string, newPassword: string): Promise<void> {
+  // Validate password strength (minimum 8 characters)
+  if (!newPassword || newPassword.length < 8) {
+    throw new Error('Password must be at least 8 characters long');
+  }
+
+  try {
+    // Find user with valid reset token
+    const result = await query(
+      'SELECT id FROM users WHERE reset_token = $1 AND reset_token_expires_at > NOW()',
+      [resetToken]
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error('Invalid or expired reset token');
+    }
+
+    const userId = result.rows[0].id;
+    const passwordHash = hashPassword(newPassword);
+
+    // Update password and clear reset token
+    await query(
+      'UPDATE users SET password_hash = $1, reset_token = NULL, reset_token_expires_at = NULL WHERE id = $2',
+      [passwordHash, userId]
+    );
+  } catch (err) {
+    if (err instanceof Error && err.message.includes('Invalid or expired')) {
+      throw err;
+    }
+    console.error('Error resetting password:', err);
+    throw err;
+  }
+}
+
 export async function signup(
   email: string,
   password: string,
