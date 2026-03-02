@@ -1,11 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as authService from '../auth.js';
 import * as userRepo from '../../repositories/user.js';
+import * as db from '../../db.js';
 
 vi.mock('../../repositories/user.js');
-vi.mock('../../db.js', () => ({
-  query: vi.fn(),
-}));
+vi.mock('../../db.js');
 
 describe('Auth Service', () => {
   beforeEach(() => {
@@ -25,6 +24,15 @@ describe('Auth Service', () => {
 
   describe('verifyToken', () => {
     it('should verify a valid token', async () => {
+      // Mock database query to return no blacklisted tokens
+      vi.mocked(db.query).mockResolvedValue({
+        rows: [],
+        rowCount: 0,
+        command: 'SELECT',
+        oid: 0,
+        fields: []
+      } as any);
+
       const userId = 'test-user-id';
       const { token } = authService.generateToken(userId);
       const payload = await authService.verifyToken(token);
@@ -33,6 +41,14 @@ describe('Auth Service', () => {
     });
 
     it('should return null for invalid token', async () => {
+      vi.mocked(db.query).mockResolvedValue({
+        rows: [],
+        rowCount: 0,
+        command: 'SELECT',
+        oid: 0,
+        fields: []
+      } as any);
+
       const payload = await authService.verifyToken('invalid-token');
       expect(payload).toBeNull();
     });
