@@ -32,6 +32,9 @@ jobs:
           cd ../frontend
           pnpm tsc --noEmit
 
+      - name: Test
+        run: pnpm test
+
       - name: Lint
         run: |
           cd packages/frontend
