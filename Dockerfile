@@ -45,5 +45,6 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD wget --quiet --tries=1 --spider http://localhost:3001/health || exit 1
 
-# Start backend server
-CMD ["pnpm", "run", "server:start"]
+# Run migrations and start backend server
+RUN pnpm -F backend run db:migrate
+CMD ["pnpm", "-F", "backend", "start"]
