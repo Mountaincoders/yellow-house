@@ -1,4 +1,4 @@
-import type { ApiResponse, ApiError, AuthResponse } from '@yellow-house/shared';
+import type { ApiError, AuthResponse } from '@yellow-house/shared';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -9,9 +9,16 @@ export async function apiCall<T>(
   const url = `${API_BASE}${endpoint}`;
   const token = localStorage.getItem('token');
 
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options?.headers,
+    ...(typeof options?.headers === 'object' && options?.headers !== null
+      ? Object.fromEntries(
+          Object.entries(options.headers).map(([k, v]) => [
+            k,
+            typeof v === 'string' ? v : v?.toString() ?? '',
+          ])
+        )
+      : {}),
   };
 
   if (token) {

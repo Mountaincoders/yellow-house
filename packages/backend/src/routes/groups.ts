@@ -3,7 +3,7 @@ import { authMiddleware, type AuthRequest } from '../middleware/auth.js';
 import * as groupService from '../services/group.js';
 import * as availService from '../services/availability.js';
 
-const router = Router();
+const router: ReturnType<typeof Router> = Router();
 
 // Create group
 router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {

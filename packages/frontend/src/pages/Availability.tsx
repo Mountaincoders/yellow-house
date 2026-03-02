@@ -6,7 +6,6 @@ interface AvailabilityPageProps {
 }
 
 export function AvailabilityPage({ groupId }: AvailabilityPageProps) {
-  const [slots, setSlots] = useState<AvailabilitySlot[]>([]);
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
@@ -24,15 +23,14 @@ export function AvailabilityPage({ groupId }: AvailabilityPageProps) {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch availability');
-      const data = await res.json();
-      setSlots(data);
+      const data = (await res.json()) as AvailabilitySlot[];
       
       // Extract unique time slots
-      const unique = Array.from(new Set(data.map((s: AvailabilitySlot) => s.time_slot)));
+      const unique: string[] = Array.from(new Set(data.map((s: AvailabilitySlot) => s.time_slot)));
       setTimeSlots(unique);
 
       // Mark selected ones
-      const selected = new Set(
+      const selected: Set<string> = new Set(
         data.filter((s: AvailabilitySlot) => s.marked).map((s: AvailabilitySlot) => s.time_slot)
       );
       setSelectedSlots(selected);
