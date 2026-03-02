@@ -3,11 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "workspaces": [
-    "packages/shared",
-    "packages/backend",
-    "packages/frontend"
-  ],
   "scripts": {
     "dev:backend": "pnpm -F backend dev",
     "dev:frontend": "pnpm -F frontend dev",
