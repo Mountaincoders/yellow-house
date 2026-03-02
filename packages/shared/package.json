@@ -1,0 +1,11 @@
+{
+  "name": "@yellow-house/shared",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ]
+}
