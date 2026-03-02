@@ -2,6 +2,7 @@ import express, { Response } from 'express';
 import cors from 'cors';
 import 'dotenv/config.js';
 import authRoutes from './routes/auth.js';
+import groupRoutes from './routes/groups.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -16,6 +17,7 @@ app.get('/health', (_, res: Response) => {
 });
 
 app.use('/auth', authRoutes);
+app.use('/groups', groupRoutes);
 
 // Error handler
 app.use((_, res: Response) => {
