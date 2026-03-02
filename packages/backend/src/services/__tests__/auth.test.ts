@@ -3,6 +3,9 @@ import * as authService from '../auth.js';
 import * as userRepo from '../../repositories/user.js';
 
 vi.mock('../../repositories/user.js');
+vi.mock('../../db.js', () => ({
+  query: vi.fn(),
+}));
 
 describe('Auth Service', () => {
   beforeEach(() => {
@@ -10,24 +13,27 @@ describe('Auth Service', () => {
   });
 
   describe('generateToken', () => {
-    it('should generate a valid JWT token', () => {
-      const token = authService.generateToken('test-user-id');
-      expect(token).toBeTruthy();
-      expect(typeof token).toBe('string');
+    it('should generate a valid JWT token with JTI', () => {
+      const result = authService.generateToken('test-user-id');
+      expect(result).toBeTruthy();
+      expect(result.token).toBeTruthy();
+      expect(typeof result.token).toBe('string');
+      expect(result.jti).toBeTruthy();
+      expect(typeof result.jti).toBe('string');
     });
   });
 
   describe('verifyToken', () => {
-    it('should verify a valid token', () => {
+    it('should verify a valid token', async () => {
       const userId = 'test-user-id';
-      const token = authService.generateToken(userId);
-      const payload = authService.verifyToken(token);
+      const { token } = authService.generateToken(userId);
+      const payload = await authService.verifyToken(token);
       expect(payload).toBeTruthy();
       expect(payload?.userId).toBe(userId);
     });
 
-    it('should return null for invalid token', () => {
-      const payload = authService.verifyToken('invalid-token');
+    it('should return null for invalid token', async () => {
+      const payload = await authService.verifyToken('invalid-token');
       expect(payload).toBeNull();
     });
   });

@@ -1,6 +1,6 @@
 import { Router, Response, Router as ExpressRouter } from 'express';
-import { signup, login } from '../services/auth.js';
-import type { AuthRequest } from '../middleware/auth.js';
+import { signup, login, blacklistToken } from '../services/auth.js';
+import { authMiddleware, type AuthRequest } from '../middleware/auth.js';
 
 const router: ReturnType<typeof Router> = Router();
 
@@ -35,6 +35,21 @@ router.post('/login', async (req: AuthRequest, res: Response) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     res.status(401).json({ error: message });
+  }
+});
+
+router.post('/logout', authMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.jti) {
+      res.status(400).json({ error: 'Invalid token' });
+      return;
+    }
+
+    await blacklistToken(req.jti);
+    res.status(200).json({ success: true, message: 'Logged out successfully' });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ error: message });
   }
 });
 

@@ -3,6 +3,7 @@ import { verifyToken } from '../services/auth.js';
 
 export interface AuthRequest extends Request {
   userId?: string;
+  jti?: string;
 }
 
 export function authMiddleware(
@@ -17,12 +18,20 @@ export function authMiddleware(
     return;
   }
 
-  const payload = verifyToken(token);
-  if (!payload) {
-    res.status(401).json({ error: 'Invalid token' });
-    return;
-  }
+  // Handle async verification
+  verifyToken(token)
+    .then((payload) => {
+      if (!payload) {
+        res.status(401).json({ error: 'Invalid token' });
+        return;
+      }
 
-  req.userId = payload.userId;
-  next();
+      req.userId = payload.userId;
+      req.jti = payload.jti;
+      next();
+    })
+    .catch((error) => {
+      console.error('Token verification error:', error);
+      res.status(401).json({ error: 'Invalid token' });
+    });
 }
