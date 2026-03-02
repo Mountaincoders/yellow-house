@@ -26,7 +26,13 @@ jobs:
         run: pnpm install
 
       - name: Type check
-        run: pnpm tsc --noEmit
+        run: |
+          cd packages/backend
+          pnpm tsc
+          cd ../frontend
+          pnpm tsc --noEmit
 
       - name: Lint
-        run: pnpm eslint src
+        run: |
+          cd packages/frontend
+          pnpm lint

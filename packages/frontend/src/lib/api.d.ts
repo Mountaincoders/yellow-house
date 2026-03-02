@@ -5,4 +5,3 @@ export declare function login(email: string, password: string): Promise<AuthResp
 export declare function setAuthToken(token: string): void;
 export declare function getAuthToken(): string | null;
 export declare function clearAuthToken(): void;
-//# sourceMappingURL=api.d.ts.map

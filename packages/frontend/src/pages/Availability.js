@@ -1,7 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useState } from 'react';
 export function AvailabilityPage({ groupId }) {
-    const [slots, setSlots] = useState([]);
     const [timeSlots, setTimeSlots] = useState([]);
     const [selectedSlots, setSelectedSlots] = useState(new Set());
     const [loading, setLoading] = useState(false);
@@ -18,8 +17,7 @@ export function AvailabilityPage({ groupId }) {
             });
             if (!res.ok)
                 throw new Error('Failed to fetch availability');
-            const data = await res.json();
-            setSlots(data);
+            const data = (await res.json());
             // Extract unique time slots
             const unique = Array.from(new Set(data.map((s) => s.time_slot)));
             setTimeSlots(unique);

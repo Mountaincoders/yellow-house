@@ -4,7 +4,12 @@ export async function apiCall(endpoint, options) {
     const token = localStorage.getItem('token');
     const headers = {
         'Content-Type': 'application/json',
-        ...options?.headers,
+        ...(typeof options?.headers === 'object' && options?.headers !== null
+            ? Object.fromEntries(Object.entries(options.headers).map(([k, v]) => [
+                k,
+                typeof v === 'string' ? v : v?.toString() ?? '',
+            ]))
+            : {}),
     };
     if (token) {
         headers.Authorization = `Bearer ${token}`;

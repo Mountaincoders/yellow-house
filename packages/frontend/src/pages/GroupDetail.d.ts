@@ -4,4 +4,3 @@ interface GroupDetailPageProps {
 }
 export declare function GroupDetailPage({ groupId, onBack }: GroupDetailPageProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=GroupDetail.d.ts.map
