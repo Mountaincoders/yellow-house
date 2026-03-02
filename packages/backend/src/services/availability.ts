@@ -48,9 +48,24 @@ export async function getGroupAvailability(groupId: string) {
   }));
 }
 
-export async function getOverlaps(groupId: string) {
+export async function getOverlaps(groupId: string, startDate?: string, endDate?: string) {
   const overlaps = await availRepo.calculateOverlaps(groupId);
-  return overlaps.map((o) => ({
+  
+  let filtered = overlaps;
+  
+  // Filter by date range if provided
+  if (startDate || endDate) {
+    const start = startDate ? new Date(startDate) : new Date(0);
+    const end = endDate ? new Date(endDate) : new Date('2099-12-31');
+    
+    filtered = overlaps.filter((o) => {
+      // Assuming time_slot contains date information
+      const slotDate = new Date(o.time_slot.split('T')[0]);
+      return slotDate >= start && slotDate <= end;
+    });
+  }
+  
+  return filtered.map((o) => ({
     time_slot: o.time_slot,
     overlap_count: o.overlap_count,
     total_members: o.total_members,

@@ -169,11 +169,17 @@ router.get(
   }
 );
 
-// Get overlaps
+// Get overlaps (with optional date range filter)
 router.get('/:groupId/overlaps', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const { groupId } = req.params;
-    const overlaps = await availService.getOverlaps(groupId);
+    const { startDate, endDate } = req.query;
+    
+    const overlaps = await availService.getOverlaps(
+      groupId,
+      typeof startDate === 'string' ? startDate : undefined,
+      typeof endDate === 'string' ? endDate : undefined
+    );
     res.status(200).json(overlaps);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
