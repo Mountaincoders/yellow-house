@@ -1,0 +1,43 @@
+# Yellow House MVP - 37 Tickets Implementation Order
+
+## Dependency Order
+
+Follow this order to respect dependencies and ensure smooth implementation.
+
+ 1. Database Schema Setup                              [P0] Ready for Dev
+ 2. User Registration                                  [P0] Ready for Dev
+ 3. Login / Session Management                         [P0] Ready for Dev
+ 4. Create Group                                       [P0] Ready for Dev
+ 5. Create Availability Slot                           [P0] Ready for Dev
+ 6. Calculate Overlaps Between Group Members           [P0] Ready for Dev
+ 7. View Your Availability Slots                       [P0] Ready for Dev
+ 8. Logout / Token Revocation                          [P0] Ready for Dev
+ 9. JWT Token Management (Access + Refresh)            [P0] Ready for Dev
+10. Password Reset Flow                                [P0] Ready for Dev
+11. Email Verification Flow                            [P0] Ready for Dev
+12. Email Notifications for Group Activity             [P0] Ready for Dev
+13. In-App Notifications (Phase 2)                     [P2] Ready for Dev
+14. Daily Digest Email (8 AM User TZ)                  [P0] Ready for Dev
+15. Notification Settings / Preferences                [P0] Ready for Dev
+16. Invite to Group (Email-Based, Phase 2)             [P2] Ready for Dev
+17. Remove Group Member                                [P0] Ready for Dev
+18. Edit Availability Slot                             [P0] Ready for Dev
+19. Delete / Remove Availability Slot                  [P0] Ready for Dev
+20. Set Default Availability (Phase 2)                 [P2] Ready for Dev
+21. Bulk Import Availability (Phase 2)                 [P2] Ready for Dev
+22. View Group Overlaps (Weekly/Daily)                 [P0] Ready for Dev
+23. Filter Overlaps by Date Range                      [P0] Ready for Dev
+24. Analytics Dashboard                                [P2] Ready for Dev
+25. OAuth Integration (Optional, Phase 2)              [P2] Ready for Dev
+26. Frontend Deployment & Hosting                      [P0] Ready for Dev
+27. End-to-End Test Suite                              [P0] Ready for Dev
+28. Load Testing & Performance Tuning                  [P1] Ready for Dev
+29. Security Audit & Penetration Testing               [P0] Ready for Dev
+30. Legal Notice (Impressum) + Privacy Policy          [P1] Ready for Dev
+31. API Documentation (OpenAPI/Swagger)                [P0] Ready for Dev
+32. Backend Deployment Setup (CI/CD Pipeline)          [P0] Ready for Dev
+33. Production Monitoring & Error Tracking             [P0] Ready for Dev
+34. Runbook & Operational Procedures                   [P1] Ready for Dev
+35. Backup & Disaster Recovery                         [P0] Ready for Dev
+36. Mobile App (Native iOS/Android)                    [P2] Ready for Dev
+37. Invite to Group (Link-Based)                       [P0] Ready for Dev
