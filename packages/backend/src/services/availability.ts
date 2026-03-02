@@ -83,3 +83,40 @@ export async function bulkMarkAvailability(
     marked: s.marked,
   }));
 }
+
+export async function editAvailabilitySlot(
+  slotId: string,
+  userId: string,
+  groupId: string,
+  newTimeSlot: string
+): Promise<AvailabilitySlot> {
+  const isMember = await groupRepo.isGroupMember(groupId, userId);
+  if (!isMember) {
+    throw new Error('User is not a member of this group');
+  }
+
+  // Delete old slot and create new one
+  await availRepo.deleteAvailabilitySlot(slotId);
+  const newSlot = await availRepo.createOrUpdateAvailability(userId, groupId, newTimeSlot, true);
+  
+  return {
+    id: newSlot.id,
+    user_id: newSlot.user_id,
+    group_id: newSlot.group_id,
+    time_slot: newSlot.time_slot,
+    marked: newSlot.marked,
+  };
+}
+
+export async function deleteAvailabilitySlot(
+  slotId: string,
+  userId: string,
+  groupId: string
+): Promise<void> {
+  const isMember = await groupRepo.isGroupMember(groupId, userId);
+  if (!isMember) {
+    throw new Error('User is not a member of this group');
+  }
+
+  await availRepo.deleteAvailabilitySlot(slotId);
+}

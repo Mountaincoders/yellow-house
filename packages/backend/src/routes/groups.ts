@@ -79,6 +79,24 @@ router.get('/:groupId/members', authMiddleware, async (req: AuthRequest, res: Re
   }
 });
 
+// Remove group member
+router.delete('/:groupId/members/:memberId', authMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    const { groupId, memberId } = req.params;
+    if (!req.userId) {
+      res.status(400).json({ error: 'Missing user ID' });
+      return;
+    }
+
+    await groupService.removeGroupMember(groupId, memberId, req.userId);
+    res.status(200).json({ message: 'Member removed successfully' });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    const status = message.includes('not found') || message.includes('Only group owner') ? 403 : 400;
+    res.status(status).json({ error: message });
+  }
+});
+
 // Mark availability
 router.post(
   '/:groupId/availability',
@@ -162,5 +180,55 @@ router.get('/:groupId/overlaps', authMiddleware, async (req: AuthRequest, res: R
     res.status(400).json({ error: message });
   }
 });
+
+// Edit availability slot
+router.put(
+  '/:groupId/availability/:slotId',
+  authMiddleware,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { groupId, slotId } = req.params;
+      const { time_slot } = req.body;
+
+      if (!req.userId || !time_slot) {
+        res.status(400).json({ error: 'Missing required fields' });
+        return;
+      }
+
+      const updatedSlot = await availService.editAvailabilitySlot(
+        slotId,
+        req.userId,
+        groupId,
+        time_slot
+      );
+      res.status(200).json(updatedSlot);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      res.status(400).json({ error: message });
+    }
+  }
+);
+
+// Delete availability slot
+router.delete(
+  '/:groupId/availability/:slotId',
+  authMiddleware,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { groupId, slotId } = req.params;
+
+      if (!req.userId) {
+        res.status(400).json({ error: 'Missing user ID' });
+        return;
+      }
+
+      await availService.deleteAvailabilitySlot(slotId, req.userId, groupId);
+      res.status(200).json({ message: 'Availability slot deleted successfully' });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      res.status(400).json({ error: message });
+    }
+  }
+);
 
 export default router;

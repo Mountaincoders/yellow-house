@@ -67,3 +67,28 @@ export async function getGroupMembers(
   );
   return members;
 }
+
+export async function removeGroupMember(groupId: string, userIdToRemove: string, requestingUserId: string): Promise<void> {
+  // Verify group exists and requester is owner
+  const group = await groupRepo.findGroupById(groupId);
+  if (!group) {
+    throw new Error('Group not found');
+  }
+
+  if (group.owner_id !== requestingUserId) {
+    throw new Error('Only group owner can remove members');
+  }
+
+  // Prevent removing owner
+  if (group.owner_id === userIdToRemove) {
+    throw new Error('Cannot remove group owner');
+  }
+
+  // Check if user is actually a member
+  const isMember = await groupRepo.isGroupMember(groupId, userIdToRemove);
+  if (!isMember) {
+    throw new Error('User is not a member of this group');
+  }
+
+  await groupRepo.removeGroupMember(groupId, userIdToRemove);
+}
