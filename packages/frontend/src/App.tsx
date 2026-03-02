@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { AuthPage } from './pages/Auth.js';
 import { GroupsPage } from './pages/Groups.js';
+import { GroupDetailPage } from './pages/GroupDetail.js';
 import type { User } from './types/index.js';
 
-type Page = 'dashboard' | 'groups';
+type Page = 'dashboard' | 'groups' | 'group-detail';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<Page>('groups');
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if user is logged in
@@ -85,7 +87,20 @@ function App() {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {currentPage === 'groups' && <GroupsPage />}
+        {currentPage === 'groups' && (
+          <GroupsPage
+            onSelectGroup={(groupId) => {
+              setSelectedGroupId(groupId);
+              setCurrentPage('group-detail');
+            }}
+          />
+        )}
+        {currentPage === 'group-detail' && selectedGroupId && (
+          <GroupDetailPage
+            groupId={selectedGroupId}
+            onBack={() => setCurrentPage('groups')}
+          />
+        )}
         {currentPage === 'dashboard' && (
           <div className="card">
             <h2 className="text-2xl font-bold mb-4 text-gray-800">Dashboard</h2>

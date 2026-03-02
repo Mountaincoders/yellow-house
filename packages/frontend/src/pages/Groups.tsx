@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import type { Group } from '../types/index.js';
 
-export function GroupsPage() {
+interface GroupsPageProps {
+  onSelectGroup?: (groupId: string) => void;
+}
+
+export function GroupsPage({ onSelectGroup }: GroupsPageProps) {
   const [groups, setGroups] = useState<Group[]>([]);
   const [newGroupName, setNewGroupName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -83,8 +87,12 @@ export function GroupsPage() {
                 Created {new Date(group.created_at).toLocaleDateString()}
               </p>
               <div className="flex gap-2">
-                <button className="btn-primary text-sm">View</button>
-                <button className="btn-secondary text-sm">Members</button>
+                <button
+                  onClick={() => onSelectGroup?.(group.id)}
+                  className="btn-primary text-sm"
+                >
+                  View
+                </button>
               </div>
             </div>
           ))
