@@ -1,7 +1,18 @@
 -- Enum types
-CREATE TYPE user_role AS ENUM ('owner', 'member', 'admin');
-CREATE TYPE invitation_status AS ENUM ('active', 'used', 'expired');
-CREATE TYPE notification_type AS ENUM ('group_invite', 'member_joined', 'member_left', 'availability_update', 'overlap_found');
+DO $$ BEGIN
+  CREATE TYPE user_role AS ENUM ('owner', 'member', 'admin');
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+  CREATE TYPE invitation_status AS ENUM ('active', 'used', 'expired');
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+  CREATE TYPE notification_type AS ENUM ('group_invite', 'member_joined', 'member_left', 'availability_update', 'overlap_found');
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (

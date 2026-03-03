@@ -16,7 +16,21 @@ async function migrate() {
     const schemaPath = path.join(__dirname, '../database/001-initial-schema.sql');
     const sql = fs.readFileSync(schemaPath, 'utf8');
 
-    await client.query(sql);
+    // Split by semicolon and execute statements individually for better error reporting
+    const statements = sql.split(';').filter(stmt => stmt.trim());
+    for (const statement of statements) {
+      if (statement.trim()) {
+        try {
+          await client.query(statement);
+        } catch (err) {
+          // Warn but don't fail on certain expected errors
+          if (err.code !== 'DUPLICATE_OBJECT' && !err.message.includes('already exists')) {
+            throw err;
+          }
+          console.warn(`⚠ Warning (non-fatal):`, err.message);
+        }
+      }
+    }
     console.log('✓ Database migrations completed successfully');
   } catch (error) {
     console.error('✗ Migration failed:', error);
