@@ -1,50 +1,38 @@
-# Multi-stage build for Yellow House
+# Multi-stage Dockerfile for Yellow House Backend
 
-# Stage 1: Build
-FROM node:24-alpine AS builder
+# Build stage
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
 # Install pnpm
 RUN npm install -g pnpm
 
-# Copy workspace files
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.json ./
-
-# Copy packages
-COPY packages ./packages
+# Copy all files  
+COPY . .
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Build project
+# Build TypeScript
 RUN pnpm build
 
-# Stage 2: Runtime
+# Runtime stage
 FROM node:24-alpine
 
 WORKDIR /app
 
-# Install pnpm for runtime
+# Install pnpm
 RUN npm install -g pnpm
 
-# Copy built files from builder
-COPY --from=builder /app/packages ./packages
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=builder /app/package.json ./package.json
+# Copy built app from build stage
+COPY --from=build /app .
 
-# Set environment
+# Environment
 ENV NODE_ENV=production
 ENV PORT=3001
 
-# Expose port
 EXPOSE 3001
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:3001/health || exit 1
-
-# Run migrations and start backend server
-RUN pnpm -F backend run db:migrate
-CMD ["pnpm", "-F", "backend", "start"]
+# Run migrations and start backend
+CMD sh -c "pnpm -F backend run db:migrate && pnpm -F backend start"
