@@ -1,7 +1,11 @@
 import { Pool } from 'pg';
 
+const dbUrl = process.env.DATABASE_URL || 'postgresql://com_yellowhouse_app_user:z8Ez8jiRgRiUjsa2ZAPRwEVbbT2MxlpE@dpg-d6jcobrh46gs739f39jg-a/com_yellowhouse_app';
+
+console.log('📌 DB Connection:', dbUrl.substring(0, 60) + '...');
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost:5432/yellow-house',
+  connectionString: dbUrl,
 });
 
 pool.on('error', (err: Error) => {
