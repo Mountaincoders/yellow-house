@@ -1,14 +1,25 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "pnpm build",
-  "outputDirectory": "packages/frontend/dist",
+  "installCommand": "pnpm install --frozen-lockfile",
   "env": {
-    "VITE_API_URL": "http://localhost:3000"
+    "VITE_API_URL": "https://yellow-house.onrender.com"
+  },
+  "functions": {
+    "api/**": {
+      "runtime": "nodejs20.x",
+      "memory": 1024,
+      "maxDuration": 60
+    }
   },
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "/packages/backend/dist/index.js?path=$1"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/packages/frontend/dist/index.html"
     }
   ],
   "headers": [
@@ -40,14 +51,6 @@
         {
           "key": "X-Frame-Options",
           "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
         }
       ]
     }
