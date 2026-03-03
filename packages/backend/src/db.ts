@@ -1,8 +1,12 @@
 import { Pool } from 'pg';
 
-const dbUrl = process.env.DATABASE_URL || 'postgresql://com_yellowhouse_app_user:z8Ez8jiRgRiUjsa2ZAPRwEVbbT2MxlpE@dpg-d6jcobrh46gs739f39jg-a/com_yellowhouse_app';
+const dbUrl = process.env.DATABASE_URL;
+if (!dbUrl) {
+  console.error('❌ FATAL: DATABASE_URL environment variable is not set!');
+  process.exit(1);
+}
 
-console.log('📌 DB Connection:', dbUrl.substring(0, 60) + '...');
+console.log('✓ Using DATABASE_URL:', dbUrl.substring(0, 80) + '...');
 
 const pool = new Pool({
   connectionString: dbUrl,
