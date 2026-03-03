@@ -4,8 +4,8 @@ services:
     env: node
     region: frankfurt
     plan: free
-    buildCommand: pnpm install && pnpm build && pnpm -F backend run db:migrate
-    startCommand: node packages/backend/dist/index.js
+    buildCommand: pnpm install && pnpm build
+    startCommand: bash -c "node packages/backend/scripts/migrate.js && node packages/backend/dist/index.js"
     envVars:
       - key: NODE_ENV
         value: production
