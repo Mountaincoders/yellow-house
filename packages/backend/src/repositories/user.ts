@@ -16,11 +16,18 @@ export async function createUser(
   passwordHash: string,
   name: string
 ): Promise<UserRow> {
-  const result = await query(
-    'INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3) RETURNING *',
-    [email, passwordHash, name]
-  );
-  return result.rows[0];
+  try {
+    console.log('🔄 Inserting user:', { email, name });
+    const result = await query(
+      'INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3) RETURNING id, email, name, created_at',
+      [email, passwordHash, name]
+    );
+    console.log('✓ Insert successful, rows:', result.rows.length);
+    return result.rows[0];
+  } catch (error) {
+    console.error('✗ Insert failed:', error);
+    throw error;
+  }
 }
 
 export async function updateUser(

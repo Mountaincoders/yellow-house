@@ -16,8 +16,10 @@ router.post('/signup', async (req: AuthRequest, res: Response) => {
     const result = await signup(email, password, name);
     res.status(201).json(result);
   } catch (error) {
-    console.error('Signup error:', error);
-    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Signup error:', JSON.stringify(error, null, 2));
+    console.error('Error stack:', error instanceof Error ? error.stack : 'N/A');
+    console.error('Error type:', typeof error);
+    const message = error instanceof Error ? error.message : JSON.stringify(error);
     res.status(400).json({ error: message || 'An error occurred during signup' });
   }
 });

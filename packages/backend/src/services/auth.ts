@@ -115,15 +115,23 @@ export async function signup(
   password: string,
   name: string
 ): Promise<{ user: User; token: string }> {
+  console.log('📝 signup() called:', { email, name });
+  
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
+    console.log('⚠ User already exists:', email);
     throw new Error('User already exists');
   }
+  console.log('✓ User does not exist, proceeding');
 
   const passwordHash = hashPassword(password);
+  console.log('✓ Password hashed');
+  
   const user = await createUser(email, passwordHash, name);
+  console.log('✓ User created:', user.id);
 
   const { token } = generateToken(user.id);
+  console.log('✓ Token generated');
 
   return {
     user: {
