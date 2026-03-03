@@ -6,6 +6,10 @@ import pg from 'pg';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbUrl = process.env.DATABASE_URL || 'postgresql://localhost:5432/yellow-house';
 
+console.log('🔍 DEBUG: DATABASE_URL =', dbUrl ? dbUrl.substring(0, 50) + '...' : 'NOT SET');
+console.log('🔍 DEBUG: NODE_ENV =', process.env.NODE_ENV);
+console.log('🔍 DEBUG: All env keys:', Object.keys(process.env).filter(k => k.includes('DATABASE') || k.includes('NODE')));
+
 async function migrate() {
   const client = new pg.Client(dbUrl);
 
